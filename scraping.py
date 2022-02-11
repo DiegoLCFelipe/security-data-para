@@ -28,7 +28,7 @@ dic_tabels = {
 lst_dados = []
 
 for key, value in zip(dic_tabels.keys(), dic_tabels.values()):
-    Table = WebTable(path + value, key)
+    Table = WebTable(path + value)
     header = Table.table_header()
     content = Table.table_content()
 

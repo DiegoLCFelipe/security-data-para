@@ -6,7 +6,7 @@ class WebTable:
     """ Extração e armazenamento de tabelas de páginas html
     """
 
-    def __init__(self, url, id):
+    def __init__(self, url):
         """__init__ Método construtor de classe
 
         Args:
@@ -18,7 +18,6 @@ class WebTable:
         """
         print("Scrapping Table... {}".format(self))
         self.__url = url
-        self.__id = id
         self.__page = self.request()
 
     def request(self):
@@ -46,7 +45,7 @@ class WebTable:
             Retorna apenas a tabela
         """
         self.parse_xml()
-        self.table = self.soup.find('table', id)
+        self.table = self.soup.find('table')
         return self.table
 
     def table_header(self):
