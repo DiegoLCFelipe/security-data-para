@@ -26,8 +26,8 @@ class WebTable:
         Returns:
             [type]: Resposta do servidor
         """
-        page = requests.get(self.__url)
-        return page
+        return requests.get(self.__url)
+
 
     def parse_xml(self):
         """parse_xml Transformar o código html em um formato mais amigável para o python (unicode)
@@ -35,8 +35,8 @@ class WebTable:
         Returns:
             [type]: Retorna o arquivo em unicode
         """
-        self.soup = BeautifulSoup(self.__page.text, 'lxml')
-        return self.soup
+
+        return BeautifulSoup(self.__page.text, 'lxml')
 
     def find_table(self):
         """find_table Procura a tabela dentro da página
@@ -44,9 +44,7 @@ class WebTable:
         Returns:
             Retorna apenas a tabela
         """
-        self.parse_xml()
-        self.table = self.soup.find('table')
-        return self.table
+        return self.parse_xml().find('table')
 
     def table_header(self):
         """table_header Procrua do cabeçalho da tabela
@@ -56,7 +54,7 @@ class WebTable:
         """
         self.find_table()
         self.header = []
-        for i in self.table.find_all('th'):
+        for i in self.find_table().find_all('th'):
             titulo = i.text
             self.header.append(titulo)
         return self.header
@@ -69,7 +67,7 @@ class WebTable:
         """
         self.find_table()
         self.lst_row = []
-        for j in self.table.find_all('tr')[1:]:
+        for j in self.find_table().find_all('tr')[1:]:
             row_data = j.find_all('td')
             row = [i.text for i in row_data]
             self.lst_row.append(row)
