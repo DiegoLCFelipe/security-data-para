@@ -9,28 +9,37 @@ lst_dados = []
 
 links = Links(url)
 dict_tables = links.tag_split()
-
-print(dict_tables)
+content_columns_dropped = []
+lst_data_formated = []
 
 for title, link in zip(dict_tables.keys(), dict_tables.values()):
-    if title != 'Ocorrências':
-        Table = WebTable(link)
-        header = Table.table_header()
-        content = Table.table_content()
-
-        id_vars = header[0:2]
-        value_vars = header[2:12]
-    else:
+    if ('BELÉM' in title) or (title == 'Ocorrências'):
         continue
 
-    dados = pd.DataFrame(columns=header[0:12], data=content[0:12])
+    else:
+        Table = WebTable(link)
+        header = Table.header
+        content = Table.content
 
-    table_formated = FormatTable(dados)
-    table_formated.wide_to_long_format(id_vars, value_vars, 'MÊS', 'N_OCORRENCIAS')
-    table_formated.repeat_record('N_OCORRENCIAS')
-    table_formated.create_columns(['CRIME', 'ANO'], [title, url[-1:-5]])
-    lst_dados.append(table_formated.dados)
+        id_vars = header[0:2]
+        value_vars = header[2:11]
 
-dados = pd.concat(lst_dados, ignore_index=True)
-# # dados.to_csv('ocorrencias.csv', index=False)
-print(dados)
+        for table_line in content:
+            content_columns_dropped.append(table_line[:-1])
+
+        dados = pd.DataFrame(columns=header[0:11], data=content_columns_dropped)
+        data_transposed = pd.melt(dados, id_vars=id_vars, value_vars=value_vars, var_name='MÊS',
+                value_name='N_OCORRENCIAS')
+
+        data_transposed.dropna(inplace = True)
+        data_transposed = data_transposed.reindex(data_transposed.index.repeat(data_transposed['N_OCORRENCIAS']))
+        data_transposed.drop(columns='N_OCORRENCIAS', inplace=True)
+
+        data_transposed['ANO'] = url[-1:-5]
+        data_transposed['OCORRÊNCIA'] = title
+
+        lst_data_formated.append(data_transposed)
+
+data_formated = pd.concat(lst_data_formated, ignore_index=True)
+#dados.to_csv('ocorrencias.csv', index=False)
+print(data_formated)

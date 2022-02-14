@@ -31,7 +31,7 @@ class WebTable:
         self.__header = value
 
     @property
-    def content (self):
+    def content(self):
         return self.__content
 
     def request(self):
@@ -69,8 +69,8 @@ class WebTable:
         self.find_table()
         self.header = []
         for i in self.find_table().find_all('th'):
-            titulo = i.text
-            self.header.append(titulo)
+            title = i.text
+            self.header.append(title)
         return self.header
 
     def table_content(self):
@@ -87,5 +87,4 @@ class WebTable:
             self.lst_row.append(row)
 
         return self.lst_row
-
 
