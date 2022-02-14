@@ -19,6 +19,20 @@ class WebTable:
         print("Scrapping Table... {}".format(self))
         self.__url = url
         self.__page = self.request()
+        self.__header = self.table_header()
+        self.__content = self.table_content()
+
+    @property
+    def header(self):
+        return self.__header
+
+    @header.setter
+    def header(self, value):
+        self.__header = value
+
+    @property
+    def content (self):
+        return self.__content
 
     def request(self):
         """request Executa a requisição no servidor 
@@ -73,3 +87,5 @@ class WebTable:
             self.lst_row.append(row)
 
         return self.lst_row
+
+
