@@ -49,9 +49,9 @@ class Links:
         return tag.has_attr('href') and \
                tag.has_attr('title') and \
                tag.has_attr('class') and not \
-               tag.has_attr('rel') and not \
-               tag.has_attr('a') and not \
-               tag.has_attr('property')
+                   tag.has_attr('rel') and not \
+                   tag.has_attr('a') and not \
+                   tag.has_attr('property')
 
     def find_links(self):
         """
@@ -66,22 +66,25 @@ class Links:
 
     def tag_split(self):
         """
-        Retorna apenas o link da tag
+        Procura apenas o link e o title da tag e cria um dicionário
 
-        Returns: Retorna
+        Returns: Retorna um dicionário contendo o titulo (nome do crime) e os links
 
         """
+        dict = {}
         links = self.find_links()
-        data_links = []
         for line in range(len(links)):
             indice_href = str(links[line]).find('href')
             indice_title = str(links[line]).find('title')
+            indice_final = str(links[line]).find('>')
+            link = str(links[line])[indice_href + 6:indice_title - 2]
+            titulo = str(links[line])[indice_title + 7:indice_final - 6]
 
-            data_links.append(str(links[line])[indice_href + 6:indice_title - 2])
-        return data_links
+            dict_temp = {titulo: link}
+
+            dict.update(dict_temp)
+        return dict
 
 
-url = 'http://sistemas.segup.pa.gov.br/transparencia/estatisticas-2010/'
-links = Links(url)
-print(links.find_links())
+
 
