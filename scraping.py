@@ -1,53 +1,67 @@
 import pandas as pd
 from WebTable import WebTable
 from Links import Links
+from FormatTableStrategies.IterfaceTableStrategy import InterfaceTableFormatStrategy
+from FormatTableStrategies.FormatTableStrategy import FormatTableStrategy
 
-url = 'http://sistemas.segup.pa.gov.br/transparencia/estatisticas-2019/'
+url = 'http://sistemas.segup.pa.gov.br/transparencia/estatisticas-'
 
 lst_dados = []
-
-links = Links(url)
-dict_tables = links.tag_split()
 content_columns_dropped = []
 lst_data_formated = []
+year = 2020
 
-for title, link in zip(dict_tables.keys(), dict_tables.values()):
-    if ('BELÉM' in title) or (title == 'Ocorrências'):
-        continue
+links = Links(url + str(year))
+dict_tables = links.tag_split()
 
-    else:
-        Table = WebTable(link)
-        header = Table.header
-        content = Table.content
 
-        id_vars = header[0:2]
-        value_vars = header[2:14]
+class DataFrame:
 
-        for table_line in content:
+    def __init__(self, strategy):
+        self._header = None
+        self._content = None
+        self._strategy = strategy
+
+    @property
+    def strategy(self):
+        return self._strategy
+
+    @strategy.setter
+    def strategy(self, strategy: InterfaceTableFormatStrategy):
+        self._strategy = strategy
+
+    def create_dataFrame_of_year(self):
+        zipped_dictionary_table = zip(dict_tables.keys(), dict_tables.values())
+
+        for title, link in zipped_dictionary_table:
+
+            if self._should_by_pass_table(title):
+                continue
+
+            self._header, self._content = self._get_header_and_content(link)
+
+            self._apply_line_format_strategy()
+
+        return pd.DataFrame(columns=self._header[0:15], data=self._content)
+
+    @staticmethod
+    def _should_by_pass_table(with_title, exception_titles):
+        for title in exception_titles:
+            if title in with_title:
+            return True
+        return False
+
+    def _apply_line_format_strategy(self):
+        for table_line in self._content:
             for index, item in enumerate(table_line):
-                table_line[index] = table_line[index].replace(",", "")
+                table_line[index] = self._strategy.formatLine(self, table_line=table_line[index])
 
-            content_columns_dropped.append((table_line[:-1]))
+    @staticmethod
+    def _get_header_and_content(from_link):
+        table = WebTable(from_link)
+        return table.header, table.content
 
-        dados = pd.DataFrame(columns=header[0:14], data=content_columns_dropped)
 
-        data_transposed = pd.melt(dados, id_vars=id_vars, value_vars=value_vars, var_name='MÊS',
-                                  value_name='N_OCORRENCIAS')
+meuObjetoTop = DataFrame(FormatTableStrategy)
 
-        data_transposed.dropna(inplace=True)
-
-        data_transposed = data_transposed.reindex(data_transposed.index.repeat(data_transposed['N_OCORRENCIAS']))
-
-        data_transposed.drop(columns='N_OCORRENCIAS', inplace=True)
-
-        data_transposed['ANO'] = url[-5:-1]
-        data_transposed['OCORRÊNCIA'] = title
-
-        if header[0] == 'MUNICIPIOS':
-            data_transposed.rename({'MUNICIPIOS': 'MUNICIPIO'}, axis='columns', inplace=True)
-
-        lst_data_formated.append(data_transposed)
-
-data_transposed = pd.concat(lst_data_formated, ignore_index=True)
-data_transposed.to_csv('ocorrencias.csv', index=False)
-print(data_transposed)
+print(meuObjetoTop.create_dataFrame_of_year())

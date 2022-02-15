@@ -1,3 +1,4 @@
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
@@ -87,4 +88,5 @@ class WebTable:
             self.lst_row.append(row)
 
         return self.lst_row
+
 
