@@ -15,6 +15,7 @@ links = Links(url + str(year))
 dict_tables = links.tag_split()
 
 
+
 class DataFrame:
 
     def __init__(self, strategy):
@@ -35,7 +36,7 @@ class DataFrame:
 
         for title, link in zipped_dictionary_table:
 
-            if self._should_by_pass_table(title):
+            if self._should_by_pass_table(title, ['Belém', 'Ocorrências']):
                 continue
 
             self._header, self._content = self._get_header_and_content(link)
@@ -48,7 +49,7 @@ class DataFrame:
     def _should_by_pass_table(with_title, exception_titles):
         for title in exception_titles:
             if title in with_title:
-            return True
+                return True
         return False
 
     def _apply_line_format_strategy(self):
