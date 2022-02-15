@@ -16,7 +16,7 @@ class WebTable:
         Raises:
             ValueError: Sem resposta 
         """
-        print("Scrapping Table... {}".format(self))
+        print("Scrapping Table... {}".format(url))
         self.__url = url
         self.__page = self.request()
         self.__header = self.table_header()
