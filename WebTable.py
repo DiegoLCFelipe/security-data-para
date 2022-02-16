@@ -1,92 +1,55 @@
-import pandas as pd
-import requests
 from bs4 import BeautifulSoup
 
 
 class WebTable:
-    """ Extração e armazenamento de tabelas de páginas html
-    """
-
-    def __init__(self, url):
-        """__init__ Método construtor de classe
-
-        Args:
-            url (str): endreço da página que contém a tabela
-            id (str): id do objeto tabela dentro do código html
-
-        Raises:
-            ValueError: Sem resposta 
-        """
-        print("Scrapping Table... {}".format(url))
-        self.__url = url
-        self.__page = self.request()
-        self.__header = self.table_header()
-        self.__content = self.table_content()
+    def __init__(self, html_path):
+        self.__html_path = html_path
+        self.__html_file = self.open_file()
+        self.__lxml_data = self.parse_lxml()
+        self.__lxml_table_data = self.find_table()
 
     @property
-    def header(self):
-        return self.__header
+    def html_path(self):
+        return self.__html_path
 
-    @header.setter
-    def header(self, value):
-        self.__header = value
+    @html_path.setter
+    def html_path(self, value):
+        self.__html_path = value
 
     @property
-    def content(self):
-        return self.__content
+    def lxml_data(self):
+        return self.__lxml_data
 
-    def request(self):
-        """request Executa a requisição no servidor 
+    @property
+    def lxml_table_data(self):
+        return self.__lxml_table_data
 
-        Returns:
-            [type]: Resposta do servidor
-        """
-        return requests.get(self.__url)
+    def open_file(self):
+        return open(self.__html_path)
 
-
-    def parse_xml(self):
-        """parse_xml Transformar o código html em um formato mais amigável para o python (unicode)
-
-        Returns:
-            [type]: Retorna o arquivo em unicode
-        """
-
-        return BeautifulSoup(self.__page.text, 'lxml')
+    def parse_lxml(self):
+        return BeautifulSoup(self.__html_file, 'lxml')
 
     def find_table(self):
-        """find_table Procura a tabela dentro da página
-
-        Returns:
-            Retorna apenas a tabela
-        """
-        return self.parse_xml().find('table')
+        return self.__lxml_data.find('table')
 
     def table_header(self):
-        """table_header Procrua do cabeçalho da tabela
-
-        Returns:
-            Cabeçalho da tabela
-        """
-        self.find_table()
-        self.header = []
-        for i in self.find_table().find_all('th'):
+        table_content = self.table_content()
+        header = []
+        for i in self.__lxml_table_data.find_all('th'):
             title = i.text
-            self.header.append(title)
-        return self.header
+            header.append(title)
+
+        if len(header) > len(table_content[0]):
+            return header[0:len(table_content[0])]
+
+        return header
 
     def table_content(self):
-        """table_content Procura o conteúdo da tabela
-
-        Returns:
-            Retorna o conteúdo da tabela
-        """
-        self.find_table()
-        self.lst_row = []
+        lst_row_data = []
         for j in self.find_table().find_all('tr')[1:]:
             row_data = j.find_all('td')
             row = [i.text for i in row_data]
-            self.lst_row.append(row)
+            lst_row_data.append(row)
 
-        return self.lst_row
-
-
+        return lst_row_data
