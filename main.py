@@ -1,7 +1,7 @@
 import pandas as pd
 from WebTable import WebTable
 from os import listdir
-from Links import Links
+from Request import Requester
 import urllib.request
 from bs4 import BeautifulSoup
 from FormatTableStrategies.IterfaceTableStrategy import InterfaceTableFormatStrategy
@@ -16,7 +16,7 @@ def should_by_pass_file(file_name, exception_words):
 
 
 # for year in range(2010, 2021):
-#     tables_links = Links(url_base + str(year))
+#     tables_links = Requester(url_base + str(year))
 #     dict_tables = tables_links.tag_split()
 #
 #     zipped_dictionary_table = zip(dict_tables.keys(), dict_tables.values())
