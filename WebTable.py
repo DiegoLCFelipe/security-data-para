@@ -45,11 +45,13 @@ class WebTable:
 
         return header
 
+    #TODO: Create Strategy to format table, replace (,) to ()
     def table_content(self):
         lst_row_data = []
-        for j in self.find_table().find_all('tr')[1:]:
-            row_data = j.find_all('td')
-            row = [i.text for i in row_data]
+        for trs in self.find_table().find_all('tr')[1:]:
+            row_data = trs.find_all('td')
+            row = [i.text.replace(",", "") for i in row_data]
+
             lst_row_data.append(row)
 
         return lst_row_data
