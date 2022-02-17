@@ -1,68 +1,62 @@
 import pandas as pd
 from WebTable import WebTable
+from os import listdir
 from Links import Links
+import urllib.request
+from bs4 import BeautifulSoup
 from FormatTableStrategies.IterfaceTableStrategy import InterfaceTableFormatStrategy
 from FormatTableStrategies.FormatTableStrategy import FormatTableStrategy
 
-url = 'http://sistemas.segup.pa.gov.br/transparencia/estatisticas-'
 
-lst_dados = []
-content_columns_dropped = []
-lst_data_formated = []
-year = 2020
-
-links = Links(url + str(year))
-dict_tables = links.tag_split()
-
-
-
-class DataFrame:
-
-    def __init__(self, strategy):
-        self._header = None
-        self._content = None
-        self._strategy = strategy
-
-    @property
-    def strategy(self):
-        return self._strategy
-
-    @strategy.setter
-    def strategy(self, strategy: InterfaceTableFormatStrategy):
-        self._strategy = strategy
-
-    def create_dataFrame_of_year(self):
-        zipped_dictionary_table = zip(dict_tables.keys(), dict_tables.values())
-
-        for title, link in zipped_dictionary_table:
-
-            if self._should_by_pass_table(title, ['Belém', 'Ocorrências']):
-                continue
-
-            self._header, self._content = self._get_header_and_content(link)
-
-            self._apply_line_format_strategy()
-
-        return pd.DataFrame(columns=self._header[0:15], data=self._content)
-
-    @staticmethod
-    def _should_by_pass_table(with_title, exception_titles):
-        for title in exception_titles:
-            if title in with_title:
-                return True
+def should_by_pass_file(file_name, exception_words):
+    for words in exception_words:
+        if words in file_name:
+            return True
         return False
 
-    def _apply_line_format_strategy(self):
-        for table_line in self._content:
-            for index, item in enumerate(table_line):
-                table_line[index] = self._strategy.formatLine(self, table_line=table_line[index])
 
-    @staticmethod
-    def _get_header_and_content(from_link):
-        table = WebTable(from_link)
-        return table.header, table.content
+# for year in range(2010, 2021):
+#     tables_links = Links(url_base + str(year))
+#     dict_tables = tables_links.tag_split()
+#
+#     zipped_dictionary_table = zip(dict_tables.keys(), dict_tables.values())
+#     for title, link in zipped_dictionary_table:
+#         urllib.request.urlretrieve(link, 'data/' + str(title) + '_' + str(year) + '.html')
 
+lst_data_frame = []
+url_base = 'http://sistemas.segup.pa.gov.br/transparencia/estatisticas-'
 
-meuObjetoTop = DataFrame(FormatTableStrategy)
+# Validation : Verify valid files
+for file_name in listdir('data'):
+    if should_by_pass_file(file_name, ['BELÉM', 'Ocorrências']):
+        continue
 
-print(meuObjetoTop.create_dataFrame_of_year())
+    table_from_web = WebTable('data/' + file_name)
+    data_frame = pd.DataFrame(columns=table_from_web.table_header(), data=table_from_web.table_content())
+    # Remove columns 'Total'
+    data_frame.drop(data_frame.columns[-1], axis=1, inplace=True)
+
+    # Transpose dataFrama month columns
+    data_frame_transposed = pd.melt(data_frame, id_vars=data_frame.columns[0:2], value_vars=data_frame.columns[2:],
+                                    var_name='MÊS',
+                                    value_name='NÚMERO DE OCORRÊNCIAS')
+
+    # Remove NaN, None, Null etc.
+    data_frame_transposed.dropna(inplace=True)
+
+    # Transform NÚMERO DE OCORRÊNCIAS values in new registry's
+    data_frame_transposed = data_frame_transposed.reindex(
+        data_frame_transposed.index.repeat(data_frame_transposed['NÚMERO DE OCORRÊNCIAS']))
+
+    # Drop NÚMERO DE OCORRÊNCIAS
+    data_frame_transposed.drop(columns='NÚMERO DE OCORRÊNCIAS', inplace=True)
+
+    # Create columns ANO and TIPO DE OCORRÊNCIA
+    data_frame_transposed['ANO'] = file_name[-9:-5]
+    data_frame_transposed['TiPO DE OCORRÊNCIA'] = file_name[:-10]
+
+    lst_data_frame.append(data_frame_transposed)
+
+data_concat = pd.concat(lst_data_frame, ignore_index=True)
+data_concat.to_csv('ocorrencias.csv')
+
