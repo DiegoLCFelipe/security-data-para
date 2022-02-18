@@ -5,23 +5,19 @@ from bs4 import BeautifulSoup
 class Requester:
 
     def __init__(self, url):
-
         self.__url = url
+        self.__web_page = self.request()
+        self.__web_page_lxml = self.parse_xml()
+        self.__urls_tags = self.find_urls_lines()
 
     def request(self):
-
-        page = requests.get(self.__url)
-        return page
+        return requests.get(self.__url)
 
     def parse_xml(self):
-
-        page = self.request()
-        soup = BeautifulSoup(page.text, 'lxml')
-        return soup
+        return BeautifulSoup(self.__web_page.text, 'lxml')
 
     @staticmethod
     def tag_filter(tag):
-
         return tag.has_attr('href') and \
                tag.has_attr('title') and \
                tag.has_attr('class') and not \
@@ -29,24 +25,34 @@ class Requester:
                    tag.has_attr('a') and not \
                    tag.has_attr('property')
 
-    def find_links(self):
+    def find_urls_lines(self):
+        return self.__web_page_lxml.find_all(self.tag_filter)
 
-        soup = self.parse_xml()
-        links = soup.find_all(self.tag_filter)
-        return links
+
+    @staticmethod
+    def find_url_start(url_line):
+        return url_line.find('href') + 6
+
+    @staticmethod
+    def find_url_end(url_line):
+        return url_line.find('title') - 2
+
+    @staticmethod
+    def find_title_start(url_line):
+        return url_line.find('title') + 7
+
+    @staticmethod
+    def find_title_end(url_line):
+        return url_line.find('>') - 6
 
     def tag_split(self):
-
         dict = {}
-        links = self.find_links()
-        for line in range(len(links)):
-            indice_href = str(links[line]).find('href')
-            indice_title = str(links[line]).find('title')
-            indice_final = str(links[line]).find('>')
-            link = str(links[line])[indice_href + 6:indice_title - 2]
-            titulo = str(links[line])[indice_title + 7:indice_final - 6]
+        url = self.find_urls_lines()
+        for line in range(len(url)):
+            link = str(url[line])[self.find_url_start(str(url[line])):self.find_url_end(str(url[line]))]
+            title = str(url[line])[self.find_title_start(str(url[line])):self.find_title_end(str(url[line]))]
 
-            dict_temp = {titulo: link}
+            dict_temp = {title: link}
 
             dict.update(dict_temp)
         return dict
