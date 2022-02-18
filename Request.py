@@ -1,30 +1,23 @@
 import requests
-from bs4 import BeautifulSoup
-from Helper.LXMLHandler import LXMLHandler
 
 
 class Requester:
 
     def __init__(self, url):
         self.__url = url
-        self.__web_page = self.request()
-        self.__web_page_lxml = self.parse_xml()
+        self.__web_page = self._request()
 
-    def request(self):
+    def _request(self):
         return requests.get(self.__url)
 
-    def parse_xml(self):
-        return BeautifulSoup(self.__web_page.text, 'lxml')
+    def _successful_request(self):
+        if self.__web_page.status_code == 200:
+            print(f'Successful request on: {str(self.__url)}')
+            return True
+        raise RuntimeError(f'Request Failure on: {str(self.__url)}')
 
-    def get_urls(self):
-        lxml_file = LXMLHandler(self.__web_page_lxml)
-        dict_urls ={}
-        for tag in range(len(lxml_file.find_urls_lines())):
-            tag_url = lxml_file.find_tag_link(tag)
-            tag_title = lxml_file.find_tag_title(tag)
+    def page_html_code(self):
+        if self._successful_request():
+            return self.__web_page.text
 
-            dict_temp = {tag_title: tag_url}
-
-            dict_urls.update(dict_temp)
-        return dict_urls
 
