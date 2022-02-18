@@ -16,7 +16,7 @@ class Requester:
     def parse_xml(self):
         return BeautifulSoup(self.__web_page.text, 'lxml')
 
-    def tag_split(self):
+    def get_urls(self):
         lxml_file = LXMLHandler(self.__web_page_lxml)
         dict_urls ={}
         for tag in range(len(lxml_file.find_urls_lines())):
