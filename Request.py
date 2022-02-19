@@ -20,4 +20,3 @@ class Requester:
         if self._successful_request():
             return self.__web_page.text
 
-
