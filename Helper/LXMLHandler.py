@@ -2,6 +2,10 @@ from bs4 import BeautifulSoup
 
 
 class LXMLHandler:
+    FORWARD_OFFSET_FROM_HREF_TAG_ATTRIBUTE = 6
+    BACKWARD_OFFSET_FROM_TITLE_TAG_ATTRIBUTE = 2
+    FORWARD_OFFSET_FROM_TITLE_TAG_ATTRIBUTE = 7
+    BACKWARD_OFFSET_FROM_TAG_END = 6
 
     def __init__(self, lxml_code):
         self.__lxml_code = lxml_code
@@ -18,21 +22,17 @@ class LXMLHandler:
                    tag.has_attr('a') and not \
                    tag.has_attr('property')
 
-    @staticmethod
-    def _find_url_start(url_line):
-        return url_line.find('href') + 6
+    def _find_url_start(self, url_line):
+        return url_line.find('href') + self.FORWARD_OFFSET_FROM_HREF_TAG_ATTRIBUTE
 
-    @staticmethod
-    def _find_url_end(url_line):
-        return url_line.find('title') - 2
+    def _find_url_end(self, url_line):
+        return url_line.find('title') - self.BACKWARD_OFFSET_FROM_TITLE_TAG_ATTRIBUTE
 
-    @staticmethod
-    def _find_title_start(url_line):
-        return url_line.find('title') + 7
+    def _find_title_start(self, url_line):
+        return url_line.find('title') + self.FORWARD_OFFSET_FROM_TITLE_TAG_ATTRIBUTE
 
-    @staticmethod
-    def _find_title_end(url_line):
-        return url_line.find('>') - 6
+    def _find_title_end(self, url_line):
+        return url_line.find('>') - self.BACKWARD_OFFSET_FROM_TAG_END
 
     def get_urls(self):
         lst_links_of_page = []
