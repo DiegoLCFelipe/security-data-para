@@ -3,7 +3,8 @@ import requests
 
 class Requester:
 
-    def __init__(self, url):
+    def __init__(self, url, logHandler):
+        self.logHandler = logHandler
         self.__url = url
         self.__web_page = self._request()
 
@@ -12,7 +13,7 @@ class Requester:
 
     def _successful_request(self):
         if self.__web_page.status_code == 200:
-            print(f'Successful request on: {str(self.__url)}')
+            self.logHandler.log_info_timestamp(f'Successful request on: {str(self.__url)}')
             return True
         raise RuntimeError(f'Request Failure on: {str(self.__url)}')
 
