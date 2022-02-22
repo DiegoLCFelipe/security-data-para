@@ -52,30 +52,4 @@ for file_name in os.listdir(DATA_PATH):
     data_table = pd.DataFrame(columns=table_header_from_html_local_file, data=table_content_from_html_local_file)
 
     print(data_table)
-    # Remove columns 'Total'
-#     data_frame.drop(data_frame.columns[-1], axis=1, inplace=True)
-#
-#     # Transpose dataFrama month columns
-#     data_frame_transposed = pd.melt(data_frame, id_vars=data_frame.columns[0:2], value_vars=data_frame.columns[2:],
-#                                     var_name='MÊS',
-#                                     value_name='NÚMERO DE OCORRÊNCIAS')
-#
-#     # Remove NaN, None, Null etc.
-#     data_frame_transposed.dropna(inplace=True)
-#
-#     # Transform NÚMERO DE OCORRÊNCIAS values in new registry's
-#     data_frame_transposed = data_frame_transposed.reindex(
-#         data_frame_transposed.index.repeat(data_frame_transposed['NÚMERO DE OCORRÊNCIAS']))
-#
-#     # Drop NÚMERO DE OCORRÊNCIAS
-#     data_frame_transposed.drop(columns='NÚMERO DE OCORRÊNCIAS', inplace=True)
-#
-#     # Create columns ANO and TIPO DE OCORRÊNCIA
-#     data_frame_transposed['ANO'] = file_name[-9:-5]
-#     data_frame_transposed['TiPO DE OCORRÊNCIA'] = file_name[:-10]
-#
-#     print(data_frame_transposed)
-#     lst_data_frame.append(data_frame_transposed)
-#
-# data_concat = pd.concat(lst_data_frame, ignore_index=True)
-# data_concat.to_csv('ocorrencias.csv')
+
