@@ -13,3 +13,11 @@ Runnins PSD Locally in your enviroment is very easy. Be sure you have Git and Py
 1. Clone the soure code 
 
 `https://github.com/DiegoLCFelipe/security-data-para`
+
+2. Install Beautiful Soup
+
+`pip install beautifulsoup4`
+
+3. Install Pandas
+
+`pip install pandas`
