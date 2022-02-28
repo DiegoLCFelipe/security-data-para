@@ -1,5 +1,7 @@
 # PSD 
 
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+
 PSD (Pará Security Data) is a personal project for scraping and analyze security data of the state of Pará available on Portal da Transparência - Secretaria de Segurança Pública e Defesa Social do Pará (http://sistemas.segup.pa.gov.br/transparencia/#1577643346294-a9d88b58-627c).
 
 The project is divided in three parts:
@@ -14,10 +16,18 @@ Runnins PSD Locally in your enviroment is very easy. Be sure you have Git and Py
 
 `https://github.com/DiegoLCFelipe/security-data-para`
 
-2. Install Beautiful Soup
+2. Install requests
 
-`pip install beautifulsoup4`
+`python -m pip install requests`
 
-3. Install Pandas
+3. Install Beautiful Soup
 
-`pip install pandas`
+`python -m pip install beautifulsoup4`
+
+4. Install Pandas
+
+`python -m pip install pandas`
+
+5. Install tqdm
+
+`python -m pip install tqdm`
