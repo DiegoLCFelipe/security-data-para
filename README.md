@@ -10,7 +10,8 @@ The project is divided in three parts:
 3. Presentation of security indicators on a dashboard
 
 ## Running PSD Locally
-Runnins PSD Locally in your enviroment is very easy. Be sure you have Git and Python 3.0 installed.
+Runnins PSD Locally in your enviroment is very easy. Be sure you have Git and Python 3.0 installed. PSD get data from web page and filter data and saves in a .csv format that will be used in power BI. 
+
 
 1. Clone the soure code 
 
@@ -24,10 +25,24 @@ Runnins PSD Locally in your enviroment is very easy. Be sure you have Git and Py
 
 `python -m pip install beautifulsoup4`
 
-4. Install Pandas
+4. Install lxml parser
+
+`python -m pip install lxml`
+
+5. Install Pandas
 
 `python -m pip install pandas`
 
-5. Install tqdm
+6. Install tqdm
 
 `python -m pip install tqdm`
+
+7. Create Directory data (default)
+
+`mkdir data`
+
+8. Execute
+
+`python main.py`
+
+![Terminal](img/terminal.gif)
