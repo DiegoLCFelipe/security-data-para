@@ -43,7 +43,7 @@ class LogHandler:
   def using_loading_bar(self, data, total=None, description="Loading"):
     return tqdm(data, desc=description,
                 colour='White',
-                ncols=200,
+                ncols=100,
                 delay=0.5,
                 position=0,
                 total=total,
