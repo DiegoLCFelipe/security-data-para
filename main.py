@@ -32,6 +32,8 @@ DATA_PATH = 'data/'
 FIRST_YEAR = 2010
 LAST_YEAR = 2021
 IGNORED_FILES_NAMES = ['BELÉM']
+COLUMN_HEADER_MUNICIPIOS_VARIATIONS = ['MUNICIPIO', 'MUNICIPIPO', 'MUNICIPIOS']
+OUTPUT_DATA_PATH = 'ocorrências.csv'
 lst_data_frame = []
 
 # Web Scrapping
@@ -57,7 +59,7 @@ for file_name in logHandler.using_loading_bar(os.listdir(DATA_PATH), description
 
     data_table = pd.DataFrame(columns=table_header_from_html_local_file, data=table_content_from_html_local_file)
     data_security = DataHandler(data_table)
-    data_security.drop_columns([TOTAL_COLUMN_INDEX])
+    data_security.drop_columns_by_index([TOTAL_COLUMN_INDEX])
 
     data_security.transpose_data_frame(id_columns=data_security.data_frame_columns[0:1],
                                        value_columns=data_security.data_frame_columns[2:],
@@ -72,4 +74,10 @@ for file_name in logHandler.using_loading_bar(os.listdir(DATA_PATH), description
     lst_data_security.append(data_security.data_frame)
 
 full_data_security = pd.concat(lst_data_security)
-full_data_security.to_csv('ocorrencias.csv')
+full_data_security = DataHandler(full_data_security)
+logHandler.log_info_timestamp(f'Concat columns {COLUMN_HEADER_MUNICIPIOS_VARIATIONS} in column MUNICÍPIO')
+full_data_security.concat_broken_columns(COLUMN_HEADER_MUNICIPIOS_VARIATIONS, 'MUNICÍPIOS')
+logHandler.log_info_timestamp(f'Dropping columns {COLUMN_HEADER_MUNICIPIOS_VARIATIONS}')
+full_data_security.drop_columns_by_name(COLUMN_HEADER_MUNICIPIOS_VARIATIONS)
+logHandler.log_info_timestamp(f'Saving data on: {OUTPUT_DATA_PATH}')
+full_data_security.save_data_as_csv(OUTPUT_DATA_PATH)
