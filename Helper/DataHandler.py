@@ -1,7 +1,13 @@
 import pandas as pd
 from tqdm import tqdm
 
-tqdm.pandas(bar_format="{desc}: {percentage:.1f}%|{bar}| {n:.0f}/{total_fmt} [{elapsed}<{remaining}]")
+
+def pandas_load_bar_customization():
+    tqdm.pandas(bar_format="{desc}: {percentage:.1f}%|{bar}| {n:.0f}/{total_fmt} [{elapsed}<{remaining}]")
+
+
+pandas_load_bar_customization()
+
 
 class DataHandler:
 
@@ -48,8 +54,8 @@ class DataHandler:
         self._data_frame.insert(loc=len(self._columns), column=column_name, value=values)
 
     def concat_broken_columns(self, columns_to_concate, new_column_name):
-
-        self._data_frame[new_column_name] = self._data_frame[columns_to_concate].progress_apply(lambda x: ''.join(x.dropna().astype(str)), axis=1)
+        self._data_frame[new_column_name] = self._data_frame[columns_to_concate].progress_apply(
+            lambda x: ''.join(x.dropna().astype(str)), axis=1)
 
     def save_data_as_csv(self, path):
         self._data_frame.to_csv(path, index=False)
