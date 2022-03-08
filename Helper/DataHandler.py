@@ -1,4 +1,12 @@
 import pandas as pd
+from tqdm import tqdm
+
+
+def pandas_load_bar_customization():
+    tqdm.pandas(bar_format="{desc}: {percentage:.1f}%|{bar}| {n:.0f}/{total_fmt} [{elapsed}<{remaining}]")
+
+
+pandas_load_bar_customization()
 
 
 class DataHandler:
@@ -22,8 +30,12 @@ class DataHandler:
     def columns(self):
         return self._data_frame.columns
 
-    def drop_columns(self, columns):
-        self._data_frame.drop(self.data_frame.columns[columns], axis=1, inplace=True)
+    def drop_columns_by_index(self, index):
+        self._data_frame.drop(self.data_frame.columns[index], axis=1, inplace=True)
+        self._columns = self.columns()
+
+    def drop_columns_by_name(self, columns):
+        self._data_frame.drop(columns, axis=1, inplace=True)
         self._columns = self.columns()
 
     def drop_null_values(self):
@@ -40,3 +52,10 @@ class DataHandler:
 
     def add_column(self, column_name, values):
         self._data_frame.insert(loc=len(self._columns), column=column_name, value=values)
+
+    def concat_broken_columns(self, columns_to_concate, new_column_name):
+        self._data_frame[new_column_name] = self._data_frame[columns_to_concate].progress_apply(
+            lambda x: ''.join(x.dropna().astype(str)), axis=1)
+
+    def save_data_as_csv(self, path):
+        self._data_frame.to_csv(path, index=False)
