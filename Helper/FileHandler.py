@@ -1,4 +1,6 @@
 import urllib.request
+import glob
+import os
 
 
 class FileHandler:
@@ -6,6 +8,9 @@ class FileHandler:
     def __init__(self, path, logHandler, from_web=True):
         self._path = path
         self.logHandler = logHandler
+
+    def get_files_from_folder(self):
+        return glob.glob(self._path + "/*")
 
     def open_file(self):
         return open(self._path)

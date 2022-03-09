@@ -57,5 +57,8 @@ class DataHandler:
         self._data_frame[new_column_name] = self._data_frame[columns_to_concate].progress_apply(
             lambda x: ''.join(x.dropna().astype(str)), axis=1)
 
+    def filter_data_by_columns_value(self, column, value):
+        return self._data_frame.loc[self._data_frame[column]==value]
+
     def save_data_as_csv(self, path):
         self._data_frame.to_csv(path, index=False)
